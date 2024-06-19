@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# This script is a wrapper around the observability-test-environments CLI tool.
+# It ensures that the CLI tool is installed and configured before running it.
+# If the CLI tool is not installed, it will be installed using `go install`.
+
+if [ ! -f "${HOME}/go/bin/oblt-cli" ]; then
+  echo "oblt-cli is not installed. Installing it now..."
+  export GOPRIVATE=github.com/elastic
+  go install github.com/elastic/observability-test-environments/tools/oblt-cli@latest
+  "${HOME}/go/bin/oblt-cli" configure --interactive
+fi
+"${HOME}/go/bin/oblt-cli" $@
