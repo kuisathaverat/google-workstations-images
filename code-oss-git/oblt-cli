@@ -7,6 +7,7 @@ if [ ! -f "${HOME}/go/bin/oblt-cli" ]; then
   echo "oblt-cli is not installed. Installing it now..."
   export GOPRIVATE=github.com/elastic
   go install github.com/elastic/observability-test-environments/tools/oblt-cli@latest
-  "${HOME}/go/bin/oblt-cli" configure --interactive
+  "${HOME}/go/bin/oblt-cli" configure --interactive --git-http-mode
+  echo "To update the GCP credentials use: gcloud auth login --update-adc"
 fi
 "${HOME}/go/bin/oblt-cli" $@
