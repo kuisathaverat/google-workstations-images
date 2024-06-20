@@ -17,9 +17,10 @@ RUN chmod +x /usr/local/bin/github-login
 RUN groupadd -r developers && useradd -r -g developers -G sudo -m -s /bin/bash developer \
   && echo 'developer ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-# Use the created user
-USER developer
+# The user that run the Docker image must be root
+# if not the stupup doesn't work
+# USER developer
 
-ENV PATH=/${HOME}/go/bin/:${PATH}
+ENV PATH=/home/developer/go/bin/:${PATH}
 
-WORKDIR ${HOME}
+WORKDIR /home/developer
