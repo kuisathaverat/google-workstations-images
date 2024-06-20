@@ -15,7 +15,7 @@ function ask_for_email() {
 
 function ask_for_password(){
   read -rp "Enter your password: " password
-  echo "Set password to $password"
+  echo "$password"
 }
 
 if [ -z "$(git config --global user.name)" ]; then
@@ -32,6 +32,9 @@ if [ -z "$(git config --global credential.helper)" ];  then
 fi
 
 PASSWORD_KEYRING=$(ask_for_password)
+# /home/user is not owner by the `user`
+sudo chown -R "$(whoami)" "${HOME}"
+
 dbus-run-session -- bash --noprofile --norc <<EOF
 # Back them up first if you'd like
 rm -rf ~/.local/share/keyrings
