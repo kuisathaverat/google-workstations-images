@@ -1,5 +1,5 @@
 ---
-name: CD
+name: cd
 
 on:
   workflow_dispatch:
@@ -10,6 +10,13 @@ on:
 permissions:
   contents: read
   packages: write
+  attestations: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  SUB_TAG: code-oss-git
 
 jobs:
   deploy:
@@ -36,15 +43,15 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/code-oss-git
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=raw,value=latest,enable={{is_default_branch}},prefix=${{ env.SUB_TAG }}-
+            type=ref,event=branch,prefix=${{ env.SUB_TAG }}-
+            type=ref,event=pr,prefix=${{ env.SUB_TAG }}-
+            type=semver,pattern={{version}},prefix=${{ env.SUB_TAG }}-
+            type=semver,pattern={{major}}.{{minor}},prefix=${{ env.SUB_TAG }}-
+            type=semver,pattern={{major}},prefix=${{ env.SUB_TAG }}-
             type=sha
 
       - name: Build and push
@@ -58,3 +65,10 @@ jobs:
           provenance: mode=max
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
