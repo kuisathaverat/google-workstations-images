@@ -18,7 +18,10 @@ RUN curl -sL -o /usr/local/bin/gvm https://github.com/andrewkroh/gvm/releases/do
 
 COPY github-login.sh /usr/local/bin/github-login
 COPY oblt-cli /usr/local/bin/oblt-cli
+COPY 99-install-extensions.sh /etc/workstation-startup.d/99-install-extensions.sh
+
 RUN chmod +x /usr/local/bin/github-login \
-  && chmod +x /usr/local/bin/oblt-cli
+  && chmod +x /usr/local/bin/oblt-cli \
+  && chmod +x /etc/workstation-startup.d/99-install-extensions.sh
 
 ENV PATH=/home/user/go/bin/:${PATH}
